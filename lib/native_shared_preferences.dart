@@ -31,9 +31,7 @@ class NativeSharedPreferences {
     if (_manualDartRegistrationNeeded) {
       // Only do the initial registration if it hasn't already been overridden
       // with a non-default instance.
-      if (!kIsWeb &&
-          NativeSharedPreferencesStorePlatform.instance
-              is MethodChannelSharedPreferencesStore) {
+      if (!kIsWeb && NativeSharedPreferencesStorePlatform.instance is MethodChannelSharedPreferencesStore) {
         if (Platform.isLinux) {
           SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
         } else if (Platform.isWindows) {
@@ -54,15 +52,13 @@ class NativeSharedPreferences {
     if (_completer == null) {
       final completer = Completer<NativeSharedPreferences>();
       try {
-        final Map<String, Object> preferencesMap =
-            await _getSharedPreferencesMap();
+        final Map<String, Object> preferencesMap = await _getSharedPreferencesMap();
         completer.complete(NativeSharedPreferences._(preferencesMap));
       } on Exception catch (e) {
         // If there's an error, explicitly return the future with an error.
         // then set the completer to null so we can retry.
         completer.completeError(e);
-        final Future<NativeSharedPreferences> sharedPrefsFuture =
-            completer.future;
+        final Future<NativeSharedPreferences> sharedPrefsFuture = completer.future;
         _completer = null;
         return sharedPrefsFuture;
       }
@@ -119,8 +115,7 @@ class NativeSharedPreferences {
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
-  Future<bool> setBool(String key, bool? value) =>
-      _setValue('Bool', key, value);
+  Future<bool> setBool(String key, bool? value) => _setValue('Bool', key, value);
 
   /// Saves an integer [value] to persistent storage in the background.
   Future<bool> setInt(String key, int? value) => _setValue('Int', key, value);
@@ -128,16 +123,13 @@ class NativeSharedPreferences {
   /// Saves a double [value] to persistent storage in the background.
   ///
   /// Android doesn't support storing doubles, so it will be stored as a float.
-  Future<bool> setDouble(String key, double? value) =>
-      _setValue('Double', key, value);
+  Future<bool> setDouble(String key, double? value) => _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
-  Future<bool> setString(String key, String? value) =>
-      _setValue('String', key, value);
+  Future<bool> setString(String key, String? value) => _setValue('String', key, value);
 
   /// Saves a list of strings [value] to persistent storage in the background.
-  Future<bool> setStringList(String key, List<String>? value) =>
-      _setValue('StringList', key, value);
+  Future<bool> setStringList(String key, List<String>? value) => _setValue('StringList', key, value);
 
   /// Removes an entry from persistent storage.
   Future<bool> remove(String key) {
@@ -176,8 +168,7 @@ class NativeSharedPreferences {
   /// Use this method to observe modifications that were made in native code
   /// (without using the plugin) while the app is running.
   Future<void> reload() async {
-    final Map<String, Object> preferences =
-        await NativeSharedPreferences._getSharedPreferencesMap();
+    final Map<String, Object> preferences = await NativeSharedPreferences._getSharedPreferencesMap();
     _preferenceCache.clear();
     _preferenceCache.addAll(preferences);
   }
@@ -189,14 +180,15 @@ class NativeSharedPreferences {
     final Map<String, Object> preferencesMap = <String, Object>{};
     for (String key in fromSystem.keys) {
       assert(key.startsWith(_prefix));
-      preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
+      if (fromSystem[key] != null) {
+        preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
+      }
     }
     return preferencesMap;
   }
 
   Future<Map<String, Object>> getAllFromDictionary(List<String> keys) async {
-    final Map<String, Object> fromDictionary =
-        await _store.getAllFromDictionary(keys);
+    final Map<String, Object> fromDictionary = await _store.getAllFromDictionary(keys);
     return fromDictionary;
   }
 
@@ -205,16 +197,14 @@ class NativeSharedPreferences {
   /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
   static void setMockInitialValues(Map<String, Object> values) {
-    final Map<String, Object> newValues =
-        values.map<String, Object>((String key, Object value) {
+    final Map<String, Object> newValues = values.map<String, Object>((String key, Object value) {
       String newKey = key;
       if (!key.startsWith(_prefix)) {
         newKey = '$_prefix$key';
       }
       return MapEntry<String, Object>(newKey, value);
     });
-    NativeSharedPreferencesStorePlatform.instance =
-        InMemoryNativeSharedPreferencesStore.withData(newValues);
+    NativeSharedPreferencesStorePlatform.instance = InMemoryNativeSharedPreferencesStore.withData(newValues);
     _completer = null;
   }
 }
