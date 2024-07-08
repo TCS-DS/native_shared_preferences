@@ -70,7 +70,9 @@
     [self mapDateToMilliseconds:prefs mappedDictionary:mappedDictionary];
       
     for (NSString *candidateKey in mappedDictionary) {
+      if (mappedDictionary[candidateKey] != nil) {
         [filteredPrefs setObject:mappedDictionary[candidateKey] forKey:candidateKey];
+      }
     }
   }
   return filteredPrefs;

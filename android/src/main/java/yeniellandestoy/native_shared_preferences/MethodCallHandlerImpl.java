@@ -239,7 +239,10 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         }
         value = listValue;
       }
-      filteredPrefs.put(key, value);
+
+      if (value != null) {
+        filteredPrefs.put(key, value);
+      }
     }
 
     return filteredPrefs;
