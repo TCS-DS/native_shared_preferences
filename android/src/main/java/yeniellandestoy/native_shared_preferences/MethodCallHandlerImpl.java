@@ -213,10 +213,6 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private Map<String, Object> parsePreferences(Map<String, ?> allPrefs) throws IOException {
     Map<String, Object> filteredPrefs = new HashMap<>();
     for (String key : allPrefs.keySet()) {
-      if (!allPrefs.containsKey(key)) {
-        continue;
-      }
-
       Object value = allPrefs.get(key);
       if (value instanceof String) {
         String stringValue = (String) value;
