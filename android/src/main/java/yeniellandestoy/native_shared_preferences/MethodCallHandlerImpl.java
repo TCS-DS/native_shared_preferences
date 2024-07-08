@@ -27,7 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin. It is also
+ * Implementation of the {@link MethodChannel.MethodCallHandler} for the plugin.
+ * It is also
  * responsible of managing the {@link SharedPreferences}.
  */
 @SuppressWarnings("unchecked")
@@ -35,7 +36,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
 
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
 
-  // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
+  // Fun fact: The following is a base64 encoding of the string "This is the
+  // prefix for a list."
   private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
   private static final String DOUBLE_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu";
@@ -46,7 +48,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private static String getResourceFromContext(Context context, String resName) {
     final int stringRes = context.getResources().getIdentifier(resName, "string", context.getPackageName());
     if (stringRes == 0) {
-      throw new IllegalArgumentException(String.format("The 'R.string.%s' value it's not defined in your project's resources file.", resName));
+      throw new IllegalArgumentException(
+          String.format("The 'R.string.%s' value it's not defined in your project's resources file.", resName));
     }
     return context.getString(stringRes);
   }
@@ -226,20 +229,23 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         // This only happens for previous usage of setStringSet. The app expects a list.
         List<String> listValue = new ArrayList<>((Set) value);
         // Let's migrate the value too while we are at it.
-        boolean success =
-                preferences
-                        .edit()
-                        .remove(key)
-                        .putString(key, LIST_IDENTIFIER + encodeList(listValue))
-                        .commit();
+        boolean success = preferences
+            .edit()
+            .remove(key)
+            .putString(key, LIST_IDENTIFIER + encodeList(listValue))
+            .commit();
         if (!success) {
-          // If we are unable to migrate the existing preferences, it means we potentially lost them.
-          // In this case, an error from getAllPrefs() is appropriate since it will alert the app during plugin initialization.
+          // If we are unable to migrate the existing preferences, it means we potentially
+          // lost them.
+          // In this case, an error from getAllPrefs() is appropriate since it will alert
+          // the app during plugin initialization.
           throw new IOException("Could not migrate set to list");
         }
         value = listValue;
       }
-      filteredPrefs.put(key, value);
+      if (value != null) {
+        filteredPrefs.put(key, value);
+      }
     }
 
     return filteredPrefs;
